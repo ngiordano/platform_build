@@ -441,7 +441,26 @@ def WriteFullOTAPackage(input_zip, output_zip):
 
   script.FormatPartition("/system")
   script.Mount("/system")
+  script.Mount("/data")
+
+  script.Print("***************************************")
+  script.Print("**  CACHE AND BLAH CLEANUP. . .      **")
+  script.Print("**  THANKS TO VANIR FOR THAT         **")
+  script.Print("**  DE NOVO LITE. . .                **")
+  script.Print("***************************************")
+  script.DeleteFiles(["/cache"])
+  script.DeleteFiles(["/data/cron"])
+  script.DeleteFiles(["/data/dalvik-cache"])
+  script.DeleteFiles(["/data/tombstones/"])
+  script.DeleteFiles(["/data/system/usagestats/*"])
+  script.DeleteFiles(["/data/system/dropbox/*.txt"])
+
+  script.Print("***************************************")
+  script.Print("**  INSTALLING SYSTEM. . .           **")
+  script.Print("***************************************")
   script.UnpackPackageDir("system", "/system")
+  script.DeleteFiles(["/data/cron/root"])
+  script.UnpackPackageDir("data", "/data")
 
   script.Print("***************************************")
   script.Print("**  SYMLINKS AND PERMISSIONS. . .    **")
@@ -454,6 +473,9 @@ def WriteFullOTAPackage(input_zip, output_zip):
 
   Item.GetMetadata(input_zip)
   Item.Get("system").SetPermissions(script)
+  script.SetPermissionsRecursive("/system/etc/init.d", 0, 0, 0755, 0755)
+  script.SetPermissionsRecursive("/data/cron", 0, 0, 0755, 0755)
+  script.SetPermissionsRecursive("/system/etc/cron", 0, 0, 0755, 0755)
 
   common.CheckSize(boot_img.data, "boot.img", OPTIONS.info_dict)
   common.ZipWriteStr(output_zip, "boot.img", boot_img.data)
@@ -462,6 +484,11 @@ def WriteFullOTAPackage(input_zip, output_zip):
   if OPTIONS.backuptool:
     script.ShowProgress(0.2, 10)
     script.RunBackup("restore")
+
+  xylonlinks = []
+  xylonlinks.append(("/init.xylon.rc", "/init.cm.rc"))
+  xylonlinks.append(("/init.xylon.rc", "/system/etc/init.local.rc"))
+  script.MakeSymlinks(xylonlinks)
 
   script.ShowProgress(0.2, 10)
   script.Print("***************************************")
