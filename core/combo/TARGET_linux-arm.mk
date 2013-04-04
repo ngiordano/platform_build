@@ -73,7 +73,7 @@ TARGET_arm_CFLAGS :=    -Os \
 else
 TARGET_arm_CFLAGS :=    -O3 \
                         -fomit-frame-pointer \
-                        -fstrict-aliasing    \
+                        -fno-strict-aliasing    \
                         -funswitch-loops
 endif
 # Modules can choose to compile some source as thumb. As
@@ -92,7 +92,7 @@ ifeq ($(ARCH_ARM_HAVE_THUMB_SUPPORT),true)
                             -O3 \
                             -fomit-frame-pointer \
                             -funsafe-math-optimizations \
-                            -fstrict-aliasing \
+                            -fno-strict-aliasing \
                             -Wstrict-aliasing=2 \
                             -Werror=strict-aliasing
     endif
