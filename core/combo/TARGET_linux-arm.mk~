@@ -73,7 +73,7 @@ TARGET_arm_CFLAGS :=    -Os \
 else
 TARGET_arm_CFLAGS :=    -O3 \
                         -fomit-frame-pointer \
-                        -fno-strict-aliasing \
+                        -fstrict-aliasing \
                         -funswitch-loops \
                         -pipe
 endif
@@ -93,7 +93,7 @@ ifeq ($(ARCH_ARM_HAVE_THUMB_SUPPORT),true)
                             -O3 \
                             -fomit-frame-pointer \
                             -funsafe-math-optimizations \
-                            -fno-strict-aliasing \
+                            -fstrict-aliasing \
                             -Wstrict-aliasing=2 \
                             -Werror=strict-aliasing \
                             -pipe
