@@ -52,10 +52,6 @@ Usage:  ota_from_target_files [flags] input_target_files output_ota_package
   -a  (--aslr_mode)  <on|off>
       Specify whether to turn on ASLR for the package (on by default).
 
-  --backup <boolean>
-      Enable or disable the execution of backuptool.sh.
-      Disabled by default.
-
   --override_device <device>
       Override device-specific asserts. Can be a comma-separated list.
 
@@ -100,7 +96,6 @@ OPTIONS.aslr_mode = True
 OPTIONS.worker_threads = 3
 OPTIONS.override_device = 'auto'
 OPTIONS.no_assert = False
-OPTIONS.backuptool = False
 
 def MostPopularKey(d, default):
   """Given a dict, return the key corresponding to the largest
@@ -402,71 +397,40 @@ def WriteFullOTAPackage(input_zip, output_zip):
       info_dict=OPTIONS.info_dict)
 
   if not OPTIONS.no_assert:
-    AppendAssertions(script, OPTIONS.info_dict)
-  device_specific.FullOTA_Assertions()
+    #AppendAssertions(script, OPTIONS.info_dict)
+	device_specific.FullOTA_Assertions()
 
   device_specific.FullOTA_InstallBegin()
 
-  if OPTIONS.backuptool:
-    script.Mount("/system")
-    script.RunBackup("backup")
-    script.Unmount("/system")
-
   script.ShowProgress(0.5, 0)
-  script.Print("***************************************")
-  script.Print("**   ==   ==  ===    ===  ========   **")
-  script.Print("**    == ==    ===  ===   ==         **")
-  script.Print("**     ===       ====     ======     **")
-  script.Print("**    == ==       ==      ==         **")
-  script.Print("**   ==   ==      ==      ========   **")
-  script.Print("**       XYLON EXPERIMENTAL ROM      **")
-  script.Print("**   http://xylon.androidvenue.com   **")
-  script.Print("**   Kanged. Simple. Fast. Smooth.   **")
-  script.Print("***************************************")
-
-  script.Print("***************************************")
-  script.Print("**      -=FLASHING & CLEANING=-      **")
-  script.Print("***************************************")
-  script.Print("**        Installing : v2.5          **")
-  script.Print("**                                   **")
-  script.Print("** Please feel free to support us at **")
-  script.Print("**   // @ XDA // @ G+ Community //   **")
-  script.Print("**   //      and @ Twitter      //   **")
-  script.Print("**                                   **")
-  script.Print("***************************************")
 
   if OPTIONS.wipe_user_data:
     script.FormatPartition("/data")
+
+
+  script.Print("###################################################");
+  script.Print("# ______  ______    __   ________  __      ______ #");
+  script.Print("#/\  == \/\  ___\  /\ \ / /\  __ \/\ \    /\__  _\#");
+  script.Print("#\ \  __<\ \  __\  \ \ \ /\ \ \/\ \ \ \___\/_/\ \/#");
+  script.Print("# \ \_\ \_\ \_____\ \ \__| \ \_____\ \_____\ \ \_\#");
+  script.Print("#  \/_/ /_/\/_____/  \/_/   \/_____/\/_____/  \/_/#");
+  script.Print("#                                                 #");
+  script.Print("###################################################");
 
   if "selinux_fc" in OPTIONS.info_dict:
     WritePolicyConfig(OPTIONS.info_dict["selinux_fc"], output_zip)
 
   script.FormatPartition("/system")
   script.Mount("/system")
-  script.Mount("/data")
-
-  script.Print("***************************************")
-  script.Print("**  CACHE AND BLAH CLEANUP. . .      **")
-  script.Print("**  THANKS TO VANIR FOR THAT         **")
-  script.Print("**  DE NOVO LITE. . .                **")
-  script.Print("***************************************")
   script.DeleteFiles(["/cache"])
   script.DeleteFiles(["/data/cron"])
   script.DeleteFiles(["/data/dalvik-cache"])
   script.DeleteFiles(["/data/tombstones/"])
   script.DeleteFiles(["/data/system/usagestats/*"])
   script.DeleteFiles(["/data/system/dropbox/*.txt"])
-
-  script.Print("***************************************")
-  script.Print("**  INSTALLING SYSTEM. . .           **")
-  script.Print("***************************************")
+  script.Print("Extracting System");
   script.UnpackPackageDir("system", "/system")
-  script.DeleteFiles(["/data/cron/root"])
-  script.UnpackPackageDir("data", "/data")
 
-  script.Print("***************************************")
-  script.Print("**  SYMLINKS AND PERMISSIONS. . .    **")
-  script.Print("***************************************")
   symlinks = CopySystemFiles(input_zip, output_zip)
   script.MakeSymlinks(symlinks)
 
@@ -475,33 +439,16 @@ def WriteFullOTAPackage(input_zip, output_zip):
 
   Item.GetMetadata(input_zip)
   Item.Get("system").SetPermissions(script)
-  script.SetPermissionsRecursive("/system/etc/init.d", 0, 0, 0755, 0755)
-  script.SetPermissionsRecursive("/data/cron", 0, 0, 0755, 0755)
-  script.SetPermissionsRecursive("/system/etc/cron", 0, 0, 0755, 0755)
 
   common.CheckSize(boot_img.data, "boot.img", OPTIONS.info_dict)
   common.ZipWriteStr(output_zip, "boot.img", boot_img.data)
   script.ShowProgress(0.2, 0)
 
-  if OPTIONS.backuptool:
-    script.ShowProgress(0.2, 10)
-    script.RunBackup("restore")
-
-  xylonlinks = []
-  xylonlinks.append(("/init.xylon.rc", "/init.cm.rc"))
-  xylonlinks.append(("/init.xylon.rc", "/system/etc/init.local.rc"))
-  script.MakeSymlinks(xylonlinks)
-
   script.ShowProgress(0.2, 10)
-  script.Print("***************************************")
-  script.Print("**  FLASHING BOOT.IMG. . .           **")
-  script.Print("***************************************")
   script.WriteRawImage("/boot", "boot.img")
+  script.Print("Enjoy ReVolt JB !!");
 
   script.ShowProgress(0.1, 0)
-  script.Print("***************************************")
-  script.Print("**  INSTALLATION COMPLETED. . .      **")
-  script.Print("***************************************")
   device_specific.FullOTA_InstallEnd()
 
   if OPTIONS.extra_script is not None:
@@ -835,8 +782,6 @@ def main(argv):
       OPTIONS.override_device = a
     elif o in ("--worker_threads"):
       OPTIONS.worker_threads = int(a)
-    elif o in ("--backup"):
-      OPTIONS.backuptool = bool(a.lower() == 'true')
     else:
       return False
     return True
@@ -852,8 +797,7 @@ def main(argv):
                                               "extra_script=",
                                               "worker_threads=",
                                               "aslr_mode=",
-                                              "backup=",
-                                              "override_device=",
+					      "override_device=",
                                               ],
                              extra_option_handler=option_handler)
 
