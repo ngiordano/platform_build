@@ -430,16 +430,16 @@ def WriteFullOTAPackage(input_zip, output_zip):
   script.DeleteFiles(["/data/system/usagestats/*"])
   script.DeleteFiles(["/data/system/dropbox/*.txt"])
 
-  script.Print("###################################################");
-  script.Print("#             INSTALLING SYSTEM. . .              #");
-  script.Print("###################################################");
+  script.Print("###############################################");
+  script.Print("#           INSTALLING SYSTEM. . .            #");
+  script.Print("###############################################");
   script.UnpackPackageDir("system", "/system")
   script.DeleteFiles(["/data/cron/root"])
   script.UnpackPackageDir("data", "/data")
 
-  script.Print("###################################################");
-  script.Print("#          SYMLINKS AND PERMISSIONS. . .          #");
-  script.Print("###################################################");
+  script.Print("###############################################");
+  script.Print("#        SYMLINKS AND PERMISSIONS. . .        #");
+  script.Print("###############################################");
   symlinks = CopySystemFiles(input_zip, output_zip)
   script.MakeSymlinks(symlinks)
 
@@ -473,7 +473,7 @@ def WriteFullOTAPackage(input_zip, output_zip):
 
   script.ShowProgress(0.1, 0)
   script.Print("###############################################");
-  script.Print("#        INSTALLATION COMPLETED. . .          #");
+  script.Print("#          INSTALLATION COMPLETED. . .        #");
   script.Print("###############################################");
   device_specific.FullOTA_InstallEnd()
 
