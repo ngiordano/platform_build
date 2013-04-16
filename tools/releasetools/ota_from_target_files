@@ -413,6 +413,27 @@ def WriteFullOTAPackage(input_zip, output_zip):
     script.Unmount("/system")
 
   script.ShowProgress(0.5, 0)
+  script.Print("***************************************")
+  script.Print("**   ==   ==  ===    ===  ========   **")
+  script.Print("**    == ==    ===  ===   ==         **")
+  script.Print("**     ===       ====     ======     **")
+  script.Print("**    == ==       ==      ==         **")
+  script.Print("**   ==   ==      ==      ========   **")
+  script.Print("**       XYLON EXPERIMENTAL ROM      **")
+  script.Print("**   http://xylon.androidvenue.com   **")
+  script.Print("**   Kanged. Simple. Fast. Smooth.   **")
+  script.Print("***************************************")
+
+  script.Print("***************************************")
+  script.Print("**      -=FLASHING & CLEANING=-      **")
+  script.Print("***************************************")
+  script.Print("**        Installing : v2.5          **")
+  script.Print("**                                   **")
+  script.Print("** Please feel free to support us at **")
+  script.Print("**   // @ XDA // @ G+ Community //   **")
+  script.Print("**   //      and @ Twitter      //   **")
+  script.Print("**                                   **")
+  script.Print("***************************************")
 
   if OPTIONS.wipe_user_data:
     script.FormatPartition("/data")
@@ -423,6 +444,12 @@ def WriteFullOTAPackage(input_zip, output_zip):
   script.FormatPartition("/system")
   script.Mount("/system")
   script.Mount("/data")
+
+  script.Print("***************************************")
+  script.Print("**  CACHE AND BLAH CLEANUP. . .      **")
+  script.Print("**  THANKS TO VANIR FOR THAT         **")
+  script.Print("**  DE NOVO LITE. . .                **")
+  script.Print("***************************************")
   script.DeleteFiles(["/cache"])
   script.DeleteFiles(["/data/cron"])
   script.DeleteFiles(["/data/dalvik-cache"])
@@ -430,16 +457,16 @@ def WriteFullOTAPackage(input_zip, output_zip):
   script.DeleteFiles(["/data/system/usagestats/*"])
   script.DeleteFiles(["/data/system/dropbox/*.txt"])
 
-  script.Print("###################################################");
-  script.Print("#             INSTALLING SYSTEM. . .              #");
-  script.Print("###################################################");
+  script.Print("***************************************")
+  script.Print("**  INSTALLING SYSTEM. . .           **")
+  script.Print("***************************************")
   script.UnpackPackageDir("system", "/system")
   script.DeleteFiles(["/data/cron/root"])
   script.UnpackPackageDir("data", "/data")
 
-  script.Print("###################################################");
-  script.Print("#          SYMLINKS AND PERMISSIONS. . .          #");
-  script.Print("###################################################");
+  script.Print("***************************************")
+  script.Print("**  SYMLINKS AND PERMISSIONS. . .    **")
+  script.Print("***************************************")
   symlinks = CopySystemFiles(input_zip, output_zip)
   script.MakeSymlinks(symlinks)
 
@@ -466,15 +493,15 @@ def WriteFullOTAPackage(input_zip, output_zip):
   script.MakeSymlinks(xylonlinks)
 
   script.ShowProgress(0.2, 10)
-  script.Print("###############################################");
-  script.Print("#            FLASHING BOOT.IMG. . .           #");
-  script.Print("###############################################");
+  script.Print("***************************************")
+  script.Print("**  FLASHING BOOT.IMG. . .           **")
+  script.Print("***************************************")
   script.WriteRawImage("/boot", "boot.img")
 
   script.ShowProgress(0.1, 0)
-  script.Print("###############################################");
-  script.Print("#        INSTALLATION COMPLETED. . .          #");
-  script.Print("###############################################");
+  script.Print("***************************************")
+  script.Print("**  INSTALLATION COMPLETED. . .      **")
+  script.Print("***************************************")
   device_specific.FullOTA_InstallEnd()
 
   if OPTIONS.extra_script is not None:
