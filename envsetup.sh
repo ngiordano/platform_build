@@ -60,12 +60,12 @@ function check_product()
         return
     fi
 
-    if (echo -n $1 | grep -q -e "^revolt_") ; then
-       REVOLT_PRODUCT=$(echo -n $1 | sed -e 's/^revolt_//g')
+    if (echo -n $1 | grep -q -e "^xylon_") ; then
+       XYLON_PRODUCT=$(echo -n $1 | sed -e 's/^xylon_//g')
     else
-       REVOLT_PRODUCT=
+       XYLON_PRODUCT=
     fi
-      export REVOLT_PRODUCT
+      export XYLON_PRODUCT
 
     CALLED_FROM_SETUP=true BUILD_SYSTEM=build/core \
         TARGET_PRODUCT=$1 \
@@ -486,7 +486,7 @@ function breakfast()
     AOSP_DEVICES_ONLY="true"
     unset LUNCH_MENU_CHOICES
     add_lunch_combo full-eng
-    for f in `/bin/ls vendor/revolt/vendorsetup.sh 2> /dev/null`
+    for f in `/bin/ls vendor/aosp/vendorsetup.sh 2> /dev/null`
         do
             echo "including $f"
             . $f
@@ -502,8 +502,8 @@ function breakfast()
             # A buildtype was specified, assume a full device name
             lunch $target
         else
-            # This is probably just the REVOLT model name
-            lunch revolt_$target-userdebug
+            # This is probably just the Xylon model name
+            lunch xylon_$target-userdebug
         fi
     fi
     return $?
@@ -1244,7 +1244,7 @@ function mka() {
 function mbot() {
     unset LUNCH_MENU_CHOICES
     croot
-    ./vendor/revolt/bot/deploy.sh
+    ./vendor/aosp/bot/deploy.sh
 }
 
 function mkapush() {
